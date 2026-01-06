@@ -10,9 +10,13 @@ import morgan from "morgan";
 // import compression from "compression";
 import "dotenv/config"; // Load .env file
 import rateLimit from "express-rate-limit";
-import { userRoutes } from "./models/user/user.route";
+import { userRoutes } from "./modules/user/user.route";
 import { connectDB } from "config/db";
-import { authRoutes } from "models/auth/auth.route";
+import { authRoutes } from "modules/auth/auth.route";
+import cookieParser from "cookie-parser";
+import { categoryRoutes } from "modules/category/category.route";
+import { productRoutes } from "modules/product/product.route";
+import { tableRoutes } from "modules/table/table.route";
 
 // ────────────────────────────────────────────────
 // Environment & Configuration
@@ -37,6 +41,7 @@ const limiter = rateLimit({
 // Create Express app
 // ────────────────────────────────────────────────
 const app = express();
+app.use(cookieParser());
 
 // ────────────────────────────────────────────────
 // Security & Performance Middleware (Order matters!)
@@ -159,12 +164,11 @@ app.get("/api/secure", (_req, res) => {
 });
 
 //  All Api Routes
-// src/server.ts or src/routes/auth.routes.ts
-
-// WARNING: Remove this in production or protect with secret key!
-
 app.use("/api", userRoutes);
 app.use("/api", authRoutes);
+app.use("/api", categoryRoutes);
+app.use("/api", productRoutes);
+app.use("/api", tableRoutes);
 
 // ────────────────────────────────────────────────
 // Global Error Handler (very important!)

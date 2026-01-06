@@ -20,11 +20,7 @@ export const authenticate = (
 ) => {
   try {
     // 1. Get token from cookie (standard name 'jwt')
-    const token = req.cookies?.jwt;
-
-    // Debug (remove in production)
-    console.log("Cookie received:", req.cookies?.jwt);
-    console.log("JWT token from cookie:", token ? "present" : "missing");
+    const token = req.cookies?.jwt || req.headers.authorization?.split(" ")[1];
 
     if (!token) {
       return res.status(401).json({

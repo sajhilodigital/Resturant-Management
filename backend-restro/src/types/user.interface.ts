@@ -2,6 +2,7 @@
 
 // Import from your roles config
 import { PermissionValue, RoleValue } from "config/permissions";
+import { IProduct } from "modules/product/product.model";
 import { Document, Types } from "mongoose";
 
 // 1. User interface (full DB document shape)
@@ -14,7 +15,6 @@ export interface IUser extends Document {
   avatar?: string; // Cloudinary / S3 URL
   role: RoleValue; // "admin" | "manager" | "waiter" | "kitchen"
   permissions: PermissionValue[]; // type-safe permissions array
-  // restaurantId?: Types.ObjectId; // uncomment for multi-tenant
   isVerified: boolean;
   isActive: boolean;
   lastLogin?: Date;
@@ -29,8 +29,17 @@ export interface IUser extends Document {
   updatedAt: Date;
 }
 
-
-
+export interface LoginResponse {
+  token: string;
+  user: {
+    id: string;
+    name: string;
+    email: string;
+    role: string;
+    isVerified: boolean;
+    isActive: boolean;
+  };
+}
 
 export interface ICreateUserInput {
   _id: string;
@@ -73,4 +82,43 @@ export interface ILoginUserInput {
 // Get all users (admin only)
 export interface GetUsersOptions {
   excludeUserId?: string; // ID of currently logged-in user (from JWT/auth middleware)
+}
+
+export interface CurrentUser {
+  id: string;
+  role: string;
+}
+
+export interface PermissionOperationResult {
+  user: Record<string, any>; // better to define proper type later
+  message: string;
+  action: "added" | "no-op";
+}
+
+export interface PaginationOptions {
+  page: number;
+  limit: number;
+  sortBy?: string;
+  sortOrder?: "asc" | "desc";
+  categoryId?: string;
+  isAvailable?: string; // 'true'/'false' from query
+}
+
+export interface PaginatedProducts {
+  products: IProduct[];
+  pagination: {
+    currentPage: number;
+    totalPages: number;
+    totalItems: number;
+    limit: number;
+    hasNext: boolean;
+    hasPrevious: boolean;
+  };
+}
+
+
+export interface IUserPayload {
+  id: string;
+  branchId: string;
+  role: "admin" | "manager" | "staff";
 }
